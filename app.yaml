@@ -1,0 +1,9 @@
+runtime: python
+env: flex
+entrypoint: gunicorn -b :$PORT main:app
+
+beta_settings:
+    cloud_sql_instances: first-cloud-182117:asia-northeast1:first-cloud
+
+runtime_config:
+  python_version: 3.5

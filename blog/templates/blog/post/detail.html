@@ -1,0 +1,120 @@
+{% extends "blog/base.html" %}
+
+{% block title %}{{ post.title }}{% endblock %}
+
+{% block content %}
+  <div id="body-title">
+  <h1>{{ post.title }}</h1>
+  </div>
+  <p class="post-info">
+    Published {{ post.publish }} by {{ post.author }}
+  </p>
+  <div class="body-content">
+    {{ post.body }}
+  </div>
+  <div id="comment-section">
+      <div class="noofcomment">
+        {% with comments.count as total_comments %}
+          {{ total_comments }} comment{{ total_comments|pluralize }}
+        {% endwith %}
+      </div>
+      {% for comment in comments %}
+        <div class="comment">
+        <p class="info">
+            Comment by <span style="font-weight:bold;">{{ comment.name }}</span> {{ comment.created }}
+        </p>
+        <P class="comment-body">
+            {{ comment.body}}
+        </p>
+        <input type="button" value="Reply" class="reply-button">                                                         <!-- Reply button for Comments -->
+        <div class="reply-form">
+            <form action="" method="post" novalidate>
+                {% for field in replies_form %}
+                <div class="form-field">
+                    {{ field.label }}<br>
+                    {{ field }}
+                    {{ field.errors }}
+                </div>
+            {% endfor %}
+            {% csrf_token %}
+                <input type="text" hidden name="comment-id" value="{{ comment.id }}">
+            <input type="submit" value="Submit" class="reply-submit">
+            </form>
+        </div>
+        {% if is_reply %}
+            <p id="reply-sucessfull">Sucessfully replied !</p>
+        {% endif %}
+      </div>
+        {% if comment.repliesto.all %}
+            <div class="all_replies">
+            {% for replies in comment.repliesto.all %}
+                <div class="replies">
+                    <p class="info">
+                        reply by <span style="font-weight:bold;">{{ replies.name }}</span> {{ replies.created }}
+                    </p>
+                    <P class="replies-body">
+                        <span style="background-color:#a2c4ea;color:white;">{{ replies.rep_tag }}</span> {{ replies.body}}
+                    </p>
+                    <input type="button" value="Reply" class="reply-button">                                               <!-- Reply button for replies -->
+                    <div class="replies-reply-form">
+                        <form action="" method="post">
+                            {% for field in replies_form %}
+                            <div class="form-field">
+                                {{ field.label }}<br>
+                                {{ field }}
+                                {{ field.errors }}
+                            </div>
+                            {% endfor %}
+                            {% csrf_token %}
+                            <input type="text" hidden name="comment_id_for_rep" value="{{ comment.id }}">
+                            <input type="text" hidden name="for_reply" value="">
+                            <input type="text" hidden name="reply-id" value="{{ replies.id }}">
+                            <input type="submit" value="Submit" class="reply-submit">
+                        </form>
+                    </div>
+                </div>
+            {% endfor %}
+            </div>
+            <button class="view-replies">view replies</button>
+        {% endif %}
+        {% empty %}
+          <p>Be the first to add comment to this post !</p>
+      {% endfor %}
+        {% if new_comment %}
+          <h2>Your comment has been added.</h2>
+        {% else %}
+          <h2>Add a new comment</h2>
+          <form action="" method="post" id="share-post-form" novalidate>
+            {% for field in comment_form %}
+                <div class="form-field">
+                    {{ field.label }}
+                    {{ field }}
+                    {{ field.errors }}
+                </div>
+            {% endfor %}
+            {% csrf_token %}
+            <input type="submit" value="Submit">
+          </form>
+        {% endif %}
+  </div>
+{% endblock %}
+
+{% block script %}
+    $(document).ready(function(){
+        $(".reply-button").click(function(){
+            $(this).next().toggle(1000)
+    });
+    $(".view-replies").click(function(){
+        if($(this).prev().css('display') === 'none'){
+            $(this).prev().show(1000)
+            $(this).text('hide replies');
+        }
+        else{
+            $(this).prev().hide(1000);
+            $(this).text('view replies');
+        }
+    });
+
+
+    });
+{% endblock %}

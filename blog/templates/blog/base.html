@@ -1,0 +1,42 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/blog.css' %}"/>
+    <script src="{% static 'jquery/jquery.js' %}"></script>
+</head>
+<body>
+    <header>
+        <a class="logo" href="{% url 'blog:post_list' %}">Blog</a>
+        <div class="searchbar">
+            <form action="/blog/search/" method="get" class="search-form">
+                <input type="text" name="q">
+                <i class="fa fa-search fa-2x" aria-hidden="true"></i>
+                <input type="submit" value="search"/>
+            </form>
+        </div>
+        <nav>
+            <a href="#">Home</a>
+            <a href="#">Books</a>
+            <a href="#">Contact</a>
+        </nav>
+    </header>
+    <div id="body-wrapper">
+    <div id="content">
+        {% block content %}
+
+        {% endblock %}
+    </div>
+    <div id="sidebar">
+        {% block sidebar %}
+
+        {% endblock %}
+    </div>
+    </div>
+<script>
+    {% block script %}
+    {% endblock %}
+</script>
+</body>
+</html>
